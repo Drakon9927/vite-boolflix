@@ -11,7 +11,7 @@ export default {
 
 <template>
     <header class="w-100">
-            <h4>Yu-Gi-OH Api</h4>
+            <h4>Boolflix</h4>
 
     </header>
 </template>
@@ -20,5 +20,6 @@ export default {
 header {
     height: 3rem;
     padding: 10px;
+    background-color: red;
 }
 </style>

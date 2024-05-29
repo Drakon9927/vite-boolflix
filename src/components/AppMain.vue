@@ -4,13 +4,13 @@
     <main>
       <div class="container-fluid w-100 mybgc">
         <div class="container mymaxwidth p-4">
-          <select id="exampleSelect">
-            <option value="opzione1">Alien</option>
-            <option value="opzione2">Drago</option>
-          </select>
+          <form action="/search" method="get">
+              <input type="text" name="query" placeholder="Cerca una serie" required>
+              <button type="submit">Search</button>
+          </form>
           <div class="container mymaxwidth">
           
-            <cards-list></cards-list>
+            <!-- Movies -->
             
           </div>
         </div>
@@ -19,18 +19,13 @@
   </template>
   
   <script>
-  import CardsList from './CardsList.vue'; 
-  
-  export default {
-    components: {
-      CardsList 
-    }
-  }
+
+
   </script>
   
   <style scoped>
   .mybgc {
-    background-color: #C08234;
+    background-color: black;
     height: 100vh;
   }
   
