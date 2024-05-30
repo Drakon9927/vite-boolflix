@@ -1,56 +1,47 @@
 <template>
-  <main>
-      <div class="container-fluid w-100 mybgc">
-          <div class="container mymaxwidth p-4">
-              <form @submit.prevent="searchMedia">
-                  <input v-model="searchQuery" type="text" placeholder="Cerca un Film o una Serie TV..." required>
-                  <button type="submit">Search</button>
-              </form>
-              <div class="container mymaxwidth">
-                  <div v-for="item in results" :key="item.id" class="media-item">
-                      <h5>{{ item.title || item.name }}</h5>
-                      <p>Titolo Originale: {{ item.original_title || item.original_name }}</p>
-                      <p>Lingua: <img :src="getFlagUrl(item.original_language)" alt="Flag"></p>
-                      <p>Voto: {{ item.vote_average }}</p>
-                  </div>
-              </div>
-          </div>
-      </div>
-  </main>
+    <main>
+        <div class="container-fluid w-100 mybgc">
+            <div class="container mymaxwidth p-4">
+                <div class="container mymaxwidth g-0">
+                    <div v-for="item in results" :key="item.id" class="media-item">
+                        <h5>{{ item.title || item.name }}</h5>
+                        <p>Titolo Originale: {{ item.original_title || item.original_name }}</p>
+                        <p>Lingua: <img :src="getFlagUrl(item.original_language)" alt="Flag"></p>
+                        <p>Voto: 
+                          <span v-for="star in getStars(item.vote_average)" :key="'full-' + star" class="fa fa-star"></span>
+                          <span v-for="star in getStarsEmpty(item.vote_average)" :key="'empty-' + star" class="fa fa-star-o"></span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
 </template>
 
 <script>
-import axios from 'axios';
+import { store } from '../store.js';
 
 export default {
-  data() {
-      return {
-          searchQuery: '',
-          results: [],
-      };
-  },
-  methods: {
-      async searchMedia() {
-          const movieUrl = `https://api.themoviedb.org/3/search/movie?api_key=b3addd10630c4492d7ea5f06080ce9a0&query=${this.searchQuery}&include_adult=false&language=it-IT&page=1`;
-          const tvUrl = `https://api.themoviedb.org/3/search/tv?api_key=b3addd10630c4492d7ea5f06080ce9a0&query=${this.searchQuery}&language=it-IT&page=1`;
-          
-          try {
-              const [movieResponse, tvResponse] = await Promise.all([
-                  axios.get(movieUrl),
-                  axios.get(tvUrl)
-              ]);
-              this.results = [...movieResponse.data.results, ...tvResponse.data.results];
-          } catch (error) {
-              console.error("Error fetching the media:", error);
-              this.results = []; 
-          }
-      },
-      getFlagUrl(code) {
-          // Nel caso 'us' sia il codice per le bandiere in lingua inglese
-          if (code === 'en') code = 'us'; 
-          return `https://flagcdn.com/w20/${code.toLowerCase()}.png`; 
-      }
-  }
+    computed: {
+        results() {
+            return store.results;
+        }
+    },
+    methods: {
+        getFlagUrl(code) {
+            if (code === 'en') code = 'us';
+            return `https://flagcdn.com/w20/${code.toLowerCase()}.png`;
+        },
+        getStars(vote) {
+            const fullStars = Math.ceil(vote / 2);
+            return Array.from({ length: fullStars }, (_, i) => i + 1);
+        },
+        getStarsEmpty(vote) {
+            const fullStars = Math.ceil(vote / 2);
+            const emptyStars = 5 - fullStars;
+            return Array.from({ length: emptyStars }, (_, i) => i + 1);
+        }
+    }
 }
 </script>
 
@@ -58,14 +49,22 @@ export default {
 .mybgc {
   background-color: black;
   height: 100%;
+  min-height: 100vh;
 }
 .mymaxwidth {
   max-width: 75%;
+  display: flex;
+  flex-wrap: wrap;
 }
 .media-item {
-  margin-top: 20px;
+  max-width: 25%;
+  height: 40%;
+  margin: 5px;
   padding: 10px;
   background-color: #fff;
   border-radius: 8px;
 }
+.fa-star, .fa-star-o {
+    color: gold;
+  }
 </style>
